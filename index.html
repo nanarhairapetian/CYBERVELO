@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#000000" />
+<title>CYBERVÉLO — Urban Cyber-Mobility</title>
+<meta name="description" content="CYBERVÉLO — a modular electric hyper-bike of the new generation. 150 km range, AI-assisted drivetrain, aviation-grade carbon frame. The city limits are erased." />
+
+<!-- ============ FONTS ============ -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<!-- ============ TAILWIND (CDN) ============ -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:    '#000000',
+          char:   '#0A0A0B',
+          char2:  '#101013',
+          neon:   '#00E5FF',
+          lime:   '#CCFF00',
+        },
+        fontFamily: {
+          display: ['Syne', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          body:    ['"Space Grotesk"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  /* ============================================================
+     BASE
+     ============================================================ */
+  :root { color-scheme: dark; }
+  html  { -webkit-text-size-adjust: 100%; scroll-padding-top: 110px; }
+  body  { background: #000; overflow-x: hidden; }
+  ::selection { background: #CCFF00; color: #000; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #050505; }
+  ::-webkit-scrollbar-thumb { background: #1b1b1f; border-radius: 99px; border: 2px solid #050505; }
+  ::-webkit-scrollbar-thumb:hover { background: #00E5FF; }
+
+  /* ============================================================
+     FLUID HEADING (fixes mobile clipping on section titles)
+     Scales from 24px on tiny phones to 60px on desktop.
+     ============================================================ */
+  .heading-fluid {
+    font-size: clamp(1.5rem, 7vw, 3.75rem);
+    line-height: 1.05;
+    overflow-wrap: break-word;  /* safety net: never clip a long word */
+    word-break: normal;
+    hyphens: none;
+  }
+
+  /* ============================================================
+     CUSTOM INTERACTIVE CURSOR
+     Only hides the native cursor once JS has confirmed support.
+     ============================================================ */
+  .cursor-ring, .cursor-dot { display: none; }
+
+  @media (hover: hover) and (pointer: fine) {
+    body.cursor-ready,
+    body.cursor-ready a,
+    body.cursor-ready button,
+    body.cursor-ready input,
+    body.cursor-ready textarea,
+    body.cursor-ready label { cursor: none; }
+
+    .cursor-ring,
+    .cursor-dot {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 9999;
+      pointer-events: none;
+      border-radius: 9999px;
+      opacity: 0;
+      transform: translate3d(-50%, -50%, 0);
+      transition: opacity .3s ease,
+                  width .3s cubic-bezier(.16,1,.3,1),
+                  height .3s cubic-bezier(.16,1,.3,1),
+                  background-color .3s ease,
+                  border-color .3s ease,
+                  box-shadow .3s ease;
+      will-change: transform;
+    }
+    .cursor-ring {
+      width: 38px; height: 38px;
+      border: 1px solid rgba(255,255,255,.55);
+    }
+    .cursor-dot {
+      width: 5px; height: 5px;
+      background: #CCFF00;
+      box-shadow: 0 0 12px rgba(204,255,0,.9);
+    }
+    /* Morph on interactive elements */
+    .cursor-ring.is-hover {
+      width: 68px; height: 68px;
+      background: rgba(0,229,255,.10);
+      border-color: #00E5FF;
+      box-shadow: 0 0 40px -6px rgba(0,229,255,.8),
+                  inset 0 0 22px -10px rgba(0,229,255,.9);
+    }
+    .cursor-ring.is-down { width: 26px; height: 26px; }
+  }
+
+  /* ============================================================
+     HERO TYPOGRAPHY
+     Slightly smaller mobile minimum — keeps hero from clipping too.
+     ============================================================ */
+  .hero-line {
+    display: block;
+    font-size: clamp(2.25rem, 8.4vw, 6.4rem);
+    line-height: .84;
+    letter-spacing: -0.035em;
+    overflow-wrap: break-word;  /* safety net */
+  }
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.4px rgba(255,255,255,.62);
+    text-stroke: 1.4px rgba(255,255,255,.62);
+  }
+  @media (min-width: 768px) {
+    .text-outline { -webkit-text-stroke-width: 2px; text-stroke-width: 2px; }
+  }
+
+  /* ============================================================
+     DECORATIVE BACKGROUNDS
+     ============================================================ */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 76px 76px;
+    -webkit-mask-image: radial-gradient(ellipse 85% 62% at 50% 0%, #000 25%, transparent 78%);
+    mask-image: radial-gradient(ellipse 85% 62% at 50% 0%, #000 25%, transparent 78%);
+  }
+
+  .carbon-weave {
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.07) 0 2px, transparent 2px 7px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 2px, transparent 2px 7px);
+    background-size: 14px 14px;
+  }
+
+  /* ============================================================
+     KINETIC MARQUEE
+     ============================================================ */
+  @keyframes marquee-left {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+  }
+  .marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee-left 34s linear infinite;
+    will-change: transform;
+  }
+  .marquee--slow    { animation-duration: 60s; }
+  .marquee--reverse { animation-direction: reverse; animation-duration: 42s; }
+  .marquee-wrap:hover .marquee { animation-play-state: paused; }
+
+  /* ============================================================
+     SCROLL REVEAL
+     ============================================================ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(38px);
+    transition: opacity .9s cubic-bezier(.16,1,.3,1),
+                transform .9s cubic-bezier(.16,1,.3,1);
+    will-change: opacity, transform;
+  }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  .nav-shell { transition: background-color .45s ease, border-color .45s ease, box-shadow .45s ease; }
+  .nav-shell.is-scrolled {
+    background-color: rgba(10,10,11,.82);
+    border-color: rgba(255,255,255,.14);
+    box-shadow: 0 24px 60px -34px rgba(0,229,255,.75);
+  }
+
+  /* ============================================================
+     BENTO CARDS + HOTSPOT REVEAL
+     ============================================================ */
+  .card {
+    position: relative;
+    transition: transform .55s cubic-bezier(.16,1,.3,1),
+                border-color .45s ease,
+                box-shadow .55s cubic-bezier(.16,1,.3,1);
+  }
+  .card:hover,
+  .card.is-open {
+    transform: translateY(-6px);
+    border-color: rgba(0,229,255,.38);
+    box-shadow:
+      0 0 0 1px rgba(0,229,255,.12),
+      0 30px 70px -30px rgba(0,229,255,.55);
+  }
+
+  /* Smooth "grid-rows" accordion — no JS height hacks */
+  .reveal-spec {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    margin-top: 0;
+    transition: grid-template-rows .55s cubic-bezier(.16,1,.3,1),
+                opacity .45s ease,
+                margin-top .55s cubic-bezier(.16,1,.3,1);
+  }
+  .card:hover .reveal-spec,
+  .card.is-open .reveal-spec {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    margin-top: 1.35rem;
+  }
+  .reveal-spec > div { min-height: 0; overflow: hidden; }
+
+  /* Pulsing status dot */
+  .pulse-dot { position: relative; display: inline-flex; height: 8px; width: 8px; flex: none; }
+  .pulse-dot::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 9999px; background: #00E5FF;
+    box-shadow: 0 0 14px rgba(0,229,255,.9);
+  }
+  .pulse-dot::after {
+    content: ''; position: absolute; inset: -7px;
+    border-radius: 9999px;
+    border: 1px solid rgba(0,229,255,.55);
+    animation: dot-ping 2.6s cubic-bezier(0,0,.2,1) infinite;
+  }
+  @keyframes dot-ping {
+    0%       { transform: scale(.55); opacity: 1; }
+    80%,100% { transform: scale(1.9); opacity: 0; }
+  }
+
+  /* Micro graph draws itself on hover */
+  .graph-line {
+    stroke-dasharray: 620;
+    stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 6px rgba(0,229,255,.85));
+  }
+  .card:hover .graph-line,
+  .card.is-open .graph-line { animation: graph-draw 1.5s cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes graph-draw { from { stroke-dashoffset: 620; } to { stroke-dashoffset: 0; } }
+
+  /* Battery modules fill sequentially */
+  .batt-cell {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.10);
+    transition: background-color .4s ease, border-color .4s ease, box-shadow .4s ease;
+    transition-delay: var(--d, 0s);
+  }
+  .card:hover .batt-cell,
+  .card.is-open .batt-cell {
+    background: rgba(204,255,0,.85);
+    border-color: #CCFF00;
+    box-shadow: 0 0 22px -4px rgba(204,255,0,.85);
+  }
+
+  /* Cyber map route flow */
+  .map-route {
+    stroke-dasharray: 8 8;
+    animation: route-flow 4s linear infinite;
+  }
+  @keyframes route-flow { to { stroke-dashoffset: -160; } }
+
+  /* ============================================================
+     X-RAY HOTSPOTS
+     ============================================================ */
+  .hotspot {
+    position: absolute;
+    z-index: 30;
+    width: 30px; height: 30px;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  .hotspot-core {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+  }
+  .hotspot-core::before {
+    content: ''; width: 11px; height: 11px;
+    border-radius: 9999px;
+    background: #CCFF00;
+    box-shadow: 0 0 0 3px rgba(204,255,0,.18), 0 0 22px rgba(204,255,0,.95);
+    transition: transform .3s ease, background-color .3s ease, box-shadow .3s ease;
+  }
+  .hotspot-ring {
+    position: absolute; inset: 0;
+    border-radius: 9999px;
+    border: 1px solid rgba(204,255,0,.65);
+    animation: hotspot-ping 2.6s cubic-bezier(0,0,.2,1) infinite;
+  }
+  @keyframes hotspot-ping {
+    0%       { transform: scale(.5); opacity: .95; }
+    75%,100% { transform: scale(2.1); opacity: 0; }
+  }
+  .hotspot:hover .hotspot-core::before,
+  .hotspot.active .hotspot-core::before,
+  .hotspot:focus-visible .hotspot-core::before {
+    background: #00E5FF;
+    transform: scale(1.35);
+    box-shadow: 0 0 0 4px rgba(0,229,255,.18), 0 0 26px rgba(0,229,255,.95);
+  }
+
+  .hotspot-tip {
+    position: absolute;
+    bottom: calc(100% + 16px);
+    left: 50%;
+    width: 190px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    text-align: left;
+    background: rgba(8,8,10,.88);
+    border: 1px solid rgba(0,229,255,.32);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 24px 60px -24px rgba(0,229,255,.75);
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(.94);
+    pointer-events: none;
+    transition: opacity .35s cubic-bezier(.16,1,.3,1),
+                transform .35s cubic-bezier(.16,1,.3,1);
+  }
+  @media (min-width: 640px) { .hotspot-tip { width: 220px; } }
+
+  .hotspot:hover .hotspot-tip,
+  .hotspot.active .hotspot-tip,
+  .hotspot:focus-visible .hotspot-tip {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  /* ============================================================
+     PRICING TABS
+     ============================================================ */
+  .tab {
+    position: relative;
+    padding: .8rem 1.6rem;
+    border-radius: 9999px;
+    font-family: 'Syne', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+    transition: color .3s ease, background-color .3s ease, box-shadow .35s ease;
+  }
+  .tab:hover { color: #fff; }
+  .tab.active {
+    background: #CCFF00;
+    color: #000;
+    box-shadow: 0 0 34px -8px rgba(204,255,0,.95);
+  }
+
+  @keyframes panel-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .panel-anim { animation: panel-in .55s cubic-bezier(.16,1,.3,1) both; }
+
+  /* ============================================================
+     FORM GLOW
+     ============================================================ */
+  .field {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.028);
+    padding: 1rem 1.15rem;
+    color: #fff;
+    font-size: .95rem;
+    outline: none;
+    transition: border-color .35s ease, box-shadow .35s ease, background-color .35s ease;
+  }
+  .field::placeholder { color: rgba(255,255,255,.25); }
+  .field:focus {
+    border-color: rgba(0,229,255,.65);
+    background: rgba(0,229,255,.04);
+    box-shadow: 0 0 0 1px rgba(0,229,255,.25), 0 0 40px -10px rgba(0,229,255,.9);
+  }
+
+  /* ============================================================
+     REDUCED MOTION
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { animation: none; }
+    .reveal  { opacity: 1; transform: none; transition: none; }
+    .map-route, .hotspot-ring, .pulse-dot::after { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+
+<body class="bg-ink font-body text-white antialiased selection:bg-lime selection:text-black">
+
+<!-- ============================================================
+     CUSTOM CURSOR
+     ============================================================ -->
+<div class="cursor-ring" aria-hidden="true"></div>
+<div class="cursor-dot" aria-hidden="true"></div>
+
+<!-- ============================================================
+     SCROLL PROGRESS BAR
+     ============================================================ -->
+<div class="fixed inset-x-0 top-0 z-[60] h-[2px]" aria-hidden="true">
+  <div id="progress" class="h-full w-0 bg-gradient-to-r from-neon via-lime to-neon shadow-[0_0_14px_rgba(0,229,255,.9)] transition-[width] duration-150 ease-out"></div>
+</div>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<header class="fixed inset-x-0 top-0 z-50">
+  <div class="mx-auto max-w-[1400px] px-4 sm:px-8">
+
+    <div id="navbar" class="nav-shell mt-4 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 backdrop-blur-xl sm:px-5">
+
+      <!-- Logo -->
+      <a href="#top" class="group flex items-center gap-2.5" aria-label="CYBERVÉLO — back to top">
+        <span class="grid h-8 w-8 place-items-center rounded-lg bg-neon text-black shadow-[0_0_26px_-4px_rgba(0,229,255,.9)] transition-transform duration-300 group-hover:rotate-12">
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Z"/>
+          </svg>
+        </span>
+        <span class="font-display text-base font-extrabold uppercase tracking-[0.16em]">Cybervélo</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
+        <a href="#tech"    class="rounded-full px-4 py-2 text-[12px] uppercase tracking-[0.16em] text-white/55 transition-colors duration-300 hover:bg-white/5 hover:text-white">Technology</a>
+        <a href="#xray"    class="rounded-full px-4 py-2 text-[12px] uppercase tracking-[0.16em] text-white/55 transition-colors duration-300 hover:bg-white/5 hover:text-white">AI Drivetrain</a>
+        <a href="#pricing" class="rounded-full px-4 py-2 text-[12px] uppercase tracking-[0.16em] text-white/55 transition-colors duration-300 hover:bg-white/5 hover:text-white">Pricing</a>
+        <a href="#contact" class="rounded-full px-4 py-2 text-[12px] uppercase tracking-[0.16em] text-white/55 transition-colors duration-300 hover:bg-white/5 hover:text-white">Contact</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="#contact"
+           class="hidden rounded-full bg-lime px-5 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.16em] text-black transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_34px_-6px_rgba(204,255,0,.95)] sm:inline-flex">
+          Test ride
+        </a>
+
+        <!-- Burger -->
+        <button id="burger" type="button"
+                class="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-white transition-colors hover:border-neon/50 hover:text-neon md:hidden"
+                aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="mt-3 hidden rounded-2xl border border-white/10 bg-black/85 p-3 backdrop-blur-2xl md:hidden">
+      <nav class="flex flex-col" aria-label="Mobile navigation">
+        <a href="#tech"    class="rounded-xl px-4 py-3.5 text-sm uppercase tracking-[0.14em] text-white/70 transition hover:bg-white/5 hover:text-neon">Technology</a>
+        <a href="#xray"    class="rounded-xl px-4 py-3.5 text-sm uppercase tracking-[0.14em] text-white/70 transition hover:bg-white/5 hover:text-neon">AI Drivetrain</a>
+        <a href="#pricing" class="rounded-xl px-4 py-3.5 text-sm uppercase tracking-[0.14em] text-white/70 transition hover:bg-white/5 hover:text-neon">Pricing</a>
+        <a href="#contact" class="rounded-xl px-4 py-3.5 text-sm uppercase tracking-[0.14em] text-white/70 transition hover:bg-white/5 hover:text-neon">Contact</a>
+        <a href="#contact" class="mt-2 rounded-xl bg-lime px-4 py-3.5 text-center font-display text-xs font-bold uppercase tracking-[0.16em] text-black">Book a test ride</a>
+      </nav>
+    </div>
+
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section id="top" class="relative min-h-[100svh] overflow-hidden pt-28 pb-16 sm:pt-32 lg:pt-36">
+  <!-- Background layers -->
+  <div class="pointer-events-none absolute inset-0 bg-grid" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute -left-48 top-0 h-[560px] w-[560px] rounded-full bg-neon/10 blur-[180px]" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute -right-40 top-1/3 h-[500px] w-[500px] rounded-full bg-lime/[0.08] blur-[180px]" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-[1400px] px-5 sm:px-8">
+    <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
+
+      <!-- ---------- COPY ---------- -->
+      <div class="min-w-0 lg:col-span-7">
+
+        <!-- Status pill -->
+        <div class="reveal inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 backdrop-blur">
+          <span class="pulse-dot"></span>
+          <span class="text-[10px] uppercase tracking-[0.28em] text-white/55">Series 01 — pre-orders open</span>
+        </div>
+
+        <!-- H1 -->
+        <h1 class="reveal mt-7 font-display font-extrabold uppercase" style="transition-delay:.08s">
+          <span class="hero-line">Urban</span>
+          <span class="hero-line">
+            <span class="bg-gradient-to-r from-neon via-neon to-lime bg-clip-text text-transparent">Cyber-</span>
+          </span>
+          <span class="hero-line text-outline">Mobility</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="reveal mt-8 max-w-xl text-base leading-relaxed text-white/55 sm:text-lg" style="transition-delay:.16s">
+          <span class="font-semibold text-white">CYBERVÉLO</span> — a modular electric hyper-bike of the new generation.
+          The city limits are erased.
+        </p>
+
+        <!-- CTAs -->
+        <div class="reveal mt-10 flex flex-col gap-4 sm:flex-row sm:items-center" style="transition-delay:.24s">
+          <a href="#contact"
+             class="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full bg-neon px-8 py-4 font-display text-xs font-bold uppercase tracking-[0.18em] text-black transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_-6px_rgba(0,229,255,.95)]">
+            <span class="relative z-10">Book a test ride</span>
+            <svg class="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+            <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-700 group-hover:translate-x-full"></span>
+          </a>
+
+          <a href="#pricing"
+             class="group inline-flex items-center justify-center gap-3 rounded-full border border-white/15 px-8 py-4 font-display text-xs font-bold uppercase tracking-[0.18em] text-white transition-all duration-300 hover:border-lime/70 hover:bg-lime/[0.06] hover:text-lime hover:shadow-[0_0_40px_-12px_rgba(204,255,0,.9)]">
+            Configurator
+            <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16M4 12h16M4 18h10"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Mini stats -->
+        <dl class="reveal mt-14 grid max-w-lg grid-cols-3 gap-4 border-t border-white/10 pt-7" style="transition-delay:.32s">
+          <div>
+            <dt class="text-[10px] uppercase tracking-[0.22em] text-white/35">Range</dt>
+            <dd class="mt-1.5 font-display text-2xl font-extrabold sm:text-3xl">150<span class="ml-1 text-sm font-medium text-neon">km</span></dd>
+          </div>
+          <div>
+            <dt class="text-[10px] uppercase tracking-[0.22em] text-white/35">0–100</dt>
+            <dd class="mt-1.5 font-display text-2xl font-extrabold sm:text-3xl">3.2<span class="ml-1 text-sm font-medium text-lime">s</span></dd>
+          </div>
+          <div>
+            <dt class="text-[10px] uppercase tracking-[0.22em] text-white/35">Weight</dt>
+            <dd class="mt-1.5 font-display text-2xl font-extrabold sm:text-3xl">38<span class="ml-1 text-sm font-medium text-white/50">kg</span></dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- ---------- VISUAL ---------- -->
+      <div class="reveal relative min-w-0 lg:col-span-5" style="transition-delay:.2s">
+        <div class="group relative overflow-hidden rounded-[28px] border border-white/10 bg-char">
+          <img
+            src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=80"
+            alt="CYBERVÉLO electric hyper-bike concept in moody neon light"
+            class="h-[380px] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105 sm:h-[480px] lg:h-[560px]"
+            fetchpriority="high" />
+
+          <!-- Gradient washes -->
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent"></div>
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-neon/15 via-transparent to-lime/15 mix-blend-screen"></div>
+          <div class="pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-inset ring-white/10"></div>
+
+          <!-- Floating glass spec card -->
+          <div class="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/15 bg-black/45 p-4 backdrop-blur-xl sm:bottom-6 sm:left-6 sm:right-auto sm:w-[236px]">
+            <p class="text-[10px] uppercase tracking-[0.24em] text-white/45">Fast charge</p>
+            <p class="mt-1 font-display text-3xl font-extrabold leading-none">
+              90<span class="ml-1 text-sm font-medium text-neon">min</span>
+            </p>
+            <p class="mt-1.5 text-[11px] leading-snug text-white/45">0 → 80% from a standard 220 V outlet</p>
+          </div>
+
+          <!-- Corner tag -->
+          <div class="absolute right-5 top-5 rounded-full border border-lime/40 bg-black/50 px-3 py-1.5 text-[9px] uppercase tracking-[0.24em] text-lime backdrop-blur-md">
+            Concept 2026
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     KINETIC MARQUEE STRIP
+     ============================================================ -->
+<section class="marquee-wrap relative overflow-hidden border-y border-white/10 bg-char/50 py-6 select-none sm:py-8" aria-hidden="true">
+  <div class="marquee">
+    <!-- Copy A -->
+    <div class="flex shrink-0 items-center">
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-white/90 sm:text-6xl">Urban Cyber-Mobility</span>
+      <span class="mx-6 text-2xl text-lime sm:text-3xl">✦</span>
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-outline sm:text-6xl">Cybervélo</span>
+      <span class="mx-6 text-2xl text-neon sm:text-3xl">✦</span>
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-white/90 sm:text-6xl">150 km autonomy</span>
+      <span class="mx-6 text-2xl text-lime sm:text-3xl">✦</span>
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-outline sm:text-6xl">AI Drivetrain</span>
+      <span class="mx-6 text-2xl text-neon sm:text-3xl">✦</span>
+    </div>
+    <!-- Copy B (identical, for seamless loop) -->
+    <div class="flex shrink-0 items-center">
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-white/90 sm:text-6xl">Urban Cyber-Mobility</span>
+      <span class="mx-6 text-2xl text-lime sm:text-3xl">✦</span>
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-outline sm:text-6xl">Cybervélo</span>
+      <span class="mx-6 text-2xl text-neon sm:text-3xl">✦</span>
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-white/90 sm:text-6xl">150 km autonomy</span>
+      <span class="mx-6 text-2xl text-lime sm:text-3xl">✦</span>
+      <span class="mx-6 font-display text-4xl font-extrabold uppercase tracking-tight text-outline sm:text-6xl">AI Drivetrain</span>
+      <span class="mx-6 text-2xl text-neon sm:text-3xl">✦</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BENTO GRID — TECHNOLOGICAL SUPERIORITY
+     ============================================================ -->
+<section id="tech" class="relative overflow-hidden py-20 sm:py-28 lg:py-32">
+  <div class="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-neon/[0.07] blur-[160px]" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-[1400px] px-5 sm:px-8">
+
+    <!-- Section head -->
+    <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <div class="reveal min-w-0 max-w-2xl">
+        <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-neon">
+          <span class="h-px w-8 bg-neon"></span>01 / Technology
+        </span>
+        <!-- FLUID HEADING: fixes mobile clipping -->
+        <h2 class="heading-fluid mt-5 font-display font-extrabold uppercase tracking-tight break-words">
+          Technological<br><span class="text-outline">Superiority</span>
+        </h2>
+      </div>
+      <p class="reveal min-w-0 max-w-sm text-sm leading-relaxed text-white/45" style="transition-delay:.12s">
+        Every component was engineered from scratch. Hover a card to reveal the underlying engineering specifications.
+      </p>
+    </div>
+
+    <!-- Grid -->
+    <div class="mt-12 grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-6 lg:grid-cols-12">
+
+      <!-- ===== CARD 1 (LARGE) ===== -->
+      <article class="card group relative overflow-hidden rounded-3xl border border-white/10 bg-char p-6 sm:p-8 md:col-span-6 lg:col-span-7" tabindex="0">
+        <div class="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-neon/15 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"></div>
+
+        <div class="relative flex h-full flex-col">
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <p class="text-[10px] uppercase tracking-[0.28em] text-white/35">Autonomy</p>
+              <h3 class="mt-3 font-display text-2xl font-extrabold uppercase leading-none sm:text-3xl">
+                Range<br><span class="text-neon">150 km</span>
+              </h3>
+            </div>
+            <span class="pulse-dot mt-1.5"></span>
+          </div>
+
+          <!-- Micro graph -->
+          <div class="mt-auto pt-8">
+            <svg viewBox="0 0 300 96" class="h-24 w-full" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="graphFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stop-color="#00E5FF" stop-opacity=".42"/>
+                  <stop offset="100%" stop-color="#00E5FF" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Baseline grid -->
+              <line x1="0" y1="88" x2="300" y2="88" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+              <line x1="0" y1="58" x2="300" y2="58" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="4 6"/>
+              <line x1="0" y1="28" x2="300" y2="28" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="4 6"/>
+              <!-- Area -->
+              <path d="M0,82 C40,76 62,62 92,58 C122,54 142,40 178,33 C214,26 244,16 300,7 L300,96 L0,96 Z" fill="url(#graphFill)"/>
+              <!-- Line -->
+              <path class="graph-line" d="M0,82 C40,76 62,62 92,58 C122,54 142,40 178,33 C214,26 244,16 300,7"
+                    fill="none" stroke="#00E5FF" stroke-width="2.4" stroke-linecap="round"/>
+              <!-- End node -->
+              <circle cx="300" cy="7" r="4" fill="#CCFF00"/>
+            </svg>
+            <div class="mt-2 flex justify-between text-[9px] uppercase tracking-[0.2em] text-white/25">
+              <span>0 km</span><span>75 km</span><span>150 km</span>
+            </div>
+          </div>
+
+          <!-- Hidden specs -->
+          <div class="reveal-spec">
+            <div>
+              <ul class="grid grid-cols-1 gap-2.5 border-t border-white/10 pt-4 sm:grid-cols-3">
+                <li><p class="text-[9px] uppercase tracking-[0.2em] text-white/30">Battery</p><p class="mt-1 font-display text-sm font-bold text-white">1.2 kWh</p></li>
+                <li><p class="text-[9px] uppercase tracking-[0.2em] text-white/30">Regeneration</p><p class="mt-1 font-display text-sm font-bold text-neon">18%</p></li>
+                <li><p class="text-[9px] uppercase tracking-[0.2em] text-white/30">Charge 0→80%</p><p class="mt-1 font-display text-sm font-bold text-lime">90 min</p></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== CARD 2 (MEDIUM) ===== -->
+      <article class="card group relative overflow-hidden rounded-3xl border border-white/10 bg-char p-6 sm:p-8 md:col-span-3 lg:col-span-5" tabindex="0">
+        <div class="pointer-events-none absolute -left-16 -bottom-16 h-48 w-48 rounded-full bg-lime/10 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"></div>
+
+        <div class="relative flex h-full flex-col">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-[10px] uppercase tracking-[0.28em] text-white/35">Telemetry</p>
+              <h3 class="mt-3 font-display text-xl font-extrabold uppercase leading-tight sm:text-2xl">
+                Integrated<br><span class="text-lime">GPS tracker</span>
+              </h3>
+            </div>
+            <span class="pulse-dot mt-1.5"></span>
+          </div>
+
+          <!-- Cyber map -->
+          <div class="mt-auto pt-7">
+            <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-black/50 p-3">
+              <svg viewBox="0 0 220 120" class="h-[104px] w-full" aria-hidden="true">
+                <!-- Grid -->
+                <g stroke="rgba(255,255,255,.07)" stroke-width="1">
+                  <path d="M0 20H220M0 45H220M0 70H220M0 95H220"/>
+                  <path d="M30 0V120M70 0V120M110 0V120M150 0V120M190 0V120"/>
+                </g>
+                <!-- Blocks -->
+                <g fill="rgba(255,255,255,.035)">
+                  <rect x="34" y="24" width="32" height="18" rx="2"/>
+                  <rect x="114" y="49" width="32" height="18" rx="2"/>
+                  <rect x="154" y="24" width="32" height="18" rx="2"/>
+                  <rect x="74" y="74" width="32" height="18" rx="2"/>
+                </g>
+                <!-- Route -->
+                <path class="map-route" d="M14 104 L44 104 L44 74 L94 74 L94 44 L144 44 L144 14 L206 14"
+                      fill="none" stroke="#00E5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Pins -->
+                <circle cx="206" cy="14" r="4.5" fill="#CCFF00"/>
+                <circle cx="206" cy="14" r="9" fill="none" stroke="#CCFF00" stroke-opacity=".45" stroke-width="1.5"/>
+                <circle cx="14" cy="104" r="3" fill="#00E5FF"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Hidden specs -->
+          <div class="reveal-spec">
+            <div>
+              <ul class="space-y-2 border-t border-white/10 pt-4">
+                <li class="flex items-center justify-between gap-2 text-[11px]"><span class="text-white/40">Accuracy</span><span class="font-display font-bold text-white">1.5 m</span></li>
+                <li class="flex items-center justify-between gap-2 text-[11px]"><span class="text-white/40">Connectivity</span><span class="font-display font-bold text-white">GSM + LTE-M</span></li>
+                <li class="flex items-center justify-between gap-2 text-[11px]"><span class="text-white/40">Protection</span><span class="font-display font-bold text-lime">Anti-theft alarm</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== CARD 3 (MEDIUM) ===== -->
+      <article class="card group relative overflow-hidden rounded-3xl border border-white/10 bg-char p-6 sm:p-8 md:col-span-3 lg:col-span-5" tabindex="0">
+        <div class="pointer-events-none absolute -right-16 -bottom-16 h-48 w-48 rounded-full bg-neon/10 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"></div>
+
+        <div class="relative flex h-full flex-col">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-[10px] uppercase tracking-[0.28em] text-white/35">Energy</p>
+              <h3 class="mt-3 font-display text-xl font-extrabold uppercase leading-tight sm:text-2xl">
+                Modular<br>removable <span class="text-neon">battery</span>
+              </h3>
+            </div>
+            <span class="pulse-dot mt-1.5"></span>
+          </div>
+
+          <!-- Battery modules -->
+          <div class="mt-auto pt-8">
+            <div class="grid grid-cols-4 gap-2">
+              <div class="batt-cell h-16 rounded-lg" style="--d:0s"></div>
+              <div class="batt-cell h-16 rounded-lg" style="--d:.08s"></div>
+              <div class="batt-cell h-16 rounded-lg" style="--d:.16s"></div>
+              <div class="batt-cell h-16 rounded-lg" style="--d:.24s"></div>
+            </div>
+            <p class="mt-3 text-[10px] uppercase tracking-[0.2em] text-white/25">4 × 0.3 kWh modules</p>
+          </div>
+
+          <!-- Hidden specs -->
+          <div class="reveal-spec">
+            <div>
+              <ul class="space-y-2 border-t border-white/10 pt-4">
+                <li class="flex items-center justify-between gap-2 text-[11px]"><span class="text-white/40">Total</span><span class="font-display font-bold text-white">2 × 0.6 kWh</span></li>
+                <li class="flex items-center justify-between gap-2 text-[11px]"><span class="text-white/40">Swap time</span><span class="font-display font-bold text-lime">8 seconds</span></li>
+                <li class="flex items-center justify-between gap-2 text-[11px]"><span class="text-white/40">Cycle life</span><span class="font-display font-bold text-white">1,200 cycles</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== CARD 4 (SMALL) ===== -->
+      <article class="card group relative overflow-hidden rounded-3xl border border-white/10 bg-char p-6 sm:p-8 md:col-span-6 lg:col-span-7" tabindex="0">
+        <div class="carbon-weave pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black via-black/70 to-transparent" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -right-20 top-1/2 h-48 w-48 -translate-y-1/2 rounded-full bg-lime/15 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"></div>
+
+        <div class="relative flex h-full flex-col justify-between gap-6 sm:flex-row sm:items-center">
+          <div class="min-w-0">
+            <p class="text-[10px] uppercase tracking-[0.28em] text-white/35">Material</p>
+            <h3 class="mt-3 max-w-xs font-display text-xl font-extrabold uppercase leading-tight sm:text-2xl">
+              Aviation-grade <span class="text-lime">carbon fiber</span> frame
+            </h3>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="hidden h-16 w-px bg-white/10 sm:block"></div>
+            <div>
+              <p class="font-display text-3xl font-extrabold leading-none text-white">T1000</p>
+              <p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-white/35">Carbon grade</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden specs -->
+        <div class="reveal-spec relative">
+          <div>
+            <ul class="grid grid-cols-1 gap-2.5 border-t border-white/10 pt-4 sm:grid-cols-3">
+              <li><p class="text-[9px] uppercase tracking-[0.2em] text-white/30">Frame weight</p><p class="mt-1 font-display text-sm font-bold text-white">4.8 kg</p></li>
+              <li><p class="text-[9px] uppercase tracking-[0.2em] text-white/30">Stress test</p><p class="mt-1 font-display text-sm font-bold text-lime">120,000 cycles</p></li>
+              <li><p class="text-[9px] uppercase tracking-[0.2em] text-white/30">Warranty</p><p class="mt-1 font-display text-sm font-bold text-neon">10 years</p></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     X-RAY / HOTSPOTS  (marquee runs *behind* the product)
+     ============================================================ -->
+<section id="xray" class="relative py-16 sm:py-24 lg:py-28">
+
+  <!-- Kinetic text running horizontally behind the product showcase -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden select-none" aria-hidden="true">
+    <div class="absolute left-0 top-[18%] w-full opacity-[0.07]">
+      <div class="marquee marquee--slow">
+        <div class="flex shrink-0 items-center">
+          <span class="mx-10 font-display text-[15vw] font-extrabold uppercase leading-none tracking-tighter text-white">Cybervélo</span>
+          <span class="mx-10 font-display text-[15vw] font-extrabold uppercase leading-none tracking-tighter text-outline">AI Drivetrain</span>
+        </div>
+        <div class="flex shrink-0 items-center">
+          <span class="mx-10 font-display text-[15vw] font-extrabold uppercase leading-none tracking-tighter text-white">Cybervélo</span>
+          <span class="mx-10 font-display text-[15vw] font-extrabold uppercase leading-none tracking-tighter text-outline">AI Drivetrain</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative mx-auto max-w-[1400px] px-5 sm:px-8">
+
+    <div class="reveal min-w-0 max-w-2xl">
+      <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-lime">
+        <span class="h-px w-8 bg-lime"></span>02 / AI Chassis
+      </span>
+      <!-- FLUID HEADING -->
+      <h2 class="heading-fluid mt-5 font-display font-extrabold uppercase tracking-tight break-words">
+        Interactive <span class="text-outline">X-Ray</span>
+      </h2>
+      <p class="mt-5 max-w-xl text-sm leading-relaxed text-white/45 sm:text-base">
+        Tap the markers to look inside the machine. Every node tells its own engineering story.
+      </p>
+    </div>
+
+    <!-- Stage -->
+    <div class="reveal relative mt-10 sm:mt-12" style="transition-delay:.1s">
+
+      <!-- Image container (rounded, clipped) -->
+      <div class="relative overflow-hidden rounded-[28px] border border-white/10 bg-char">
+        <img
+          src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1800&q=80"
+          alt="Detailed view of the CYBERVÉLO hyper-bike with interactive technology hotspots"
+          class="h-[440px] w-full object-cover sm:h-[560px] lg:h-[660px]"
+          loading="lazy" />
+
+        <!-- Darkening + tint -->
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-black via-black/65 to-black/10"></div>
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
+        <div class="pointer-events-none absolute inset-0 bg-neon/[0.06] mix-blend-screen"></div>
+
+        <!-- Text overlay -->
+        <div class="absolute inset-0 flex items-end p-6 sm:items-center sm:p-10 lg:p-14">
+          <div class="max-w-md">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-neon">Adaptive drivetrain</p>
+            <h3 class="mt-3 font-display text-2xl font-extrabold uppercase leading-[1.05] sm:text-4xl">
+              The AI drivetrain<br>that reads you
+            </h3>
+            <p class="mt-4 text-sm leading-relaxed text-white/55 sm:text-base">
+              A neural network analyses 240 parameters per second — cadence, terrain, braking style — and reshapes torque
+              before you even think about accelerating.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-white/60">240 Hz</span>
+              <span class="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-white/60">4 ride modes</span>
+              <span class="rounded-full border border-lime/30 bg-lime/[0.06] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-lime">OTA updates</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hotspots live on top of the stage so tooltips can overflow freely -->
+      <button type="button" class="hotspot" style="left:58%; top:44%" aria-label="Hub motor: 750 W, 90 Nm">
+        <span class="hotspot-ring"></span>
+        <span class="hotspot-core"></span>
+        <span class="hotspot-tip">
+          <span class="block text-[9px] uppercase tracking-[0.22em] text-neon">Hub motor</span>
+          <span class="mt-1.5 block font-display text-sm font-bold leading-tight text-white">750 W · 90 Nm</span>
+          <span class="mt-1 block text-[11px] leading-snug text-white/50">Peak power on the rear axle</span>
+        </span>
+      </button>
+
+      <button type="button" class="hotspot" style="left:73%; top:66%" aria-label="Battery: 1.2 kWh, removable">
+        <span class="hotspot-ring" style="animation-delay:.5s"></span>
+        <span class="hotspot-core"></span>
+        <span class="hotspot-tip">
+          <span class="block text-[9px] uppercase tracking-[0.22em] text-lime">Battery block</span>
+          <span class="mt-1.5 block font-display text-sm font-bold leading-tight text-white">1.2 kWh</span>
+          <span class="mt-1 block text-[11px] leading-snug text-white/50">Removable module, 8-second swap</span>
+        </span>
+      </button>
+
+      <button type="button" class="hotspot" style="left:46%; top:26%" aria-label="Sensor module: 240 Hz telemetry">
+        <span class="hotspot-ring" style="animation-delay:1s"></span>
+        <span class="hotspot-core"></span>
+        <span class="hotspot-tip">
+          <span class="block text-[9px] uppercase tracking-[0.22em] text-neon">Sensor module</span>
+          <span class="mt-1.5 block font-display text-sm font-bold leading-tight text-white">240 Hz</span>
+          <span class="mt-1 block text-[11px] leading-snug text-white/50">IMU + torque sensor fusion</span>
+        </span>
+      </button>
+
+      <button type="button" class="hotspot" style="left:34%; top:72%" aria-label="Frame: T1000 carbon, 4.8 kg">
+        <span class="hotspot-ring" style="animation-delay:1.5s"></span>
+        <span class="hotspot-core"></span>
+        <span class="hotspot-tip">
+          <span class="block text-[9px] uppercase tracking-[0.22em] text-lime">Frame</span>
+          <span class="mt-1.5 block font-display text-sm font-bold leading-tight text-white">T1000 · 4.8 kg</span>
+          <span class="mt-1 block text-[11px] leading-snug text-white/50">Aviation carbon, 10-year warranty</span>
+        </span>
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRICING / CONFIGURATOR
+     ============================================================ -->
+<section id="pricing" class="relative overflow-hidden py-20 sm:py-28 lg:py-32">
+  <div class="pointer-events-none absolute left-1/2 top-10 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-lime/[0.06] blur-[170px]" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-[1400px] px-5 sm:px-8">
+
+    <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <div class="reveal min-w-0 max-w-2xl">
+        <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-neon">
+          <span class="h-px w-8 bg-neon"></span>03 / Pricing
+        </span>
+        <!-- FLUID HEADING -->
+        <h2 class="heading-fluid mt-5 font-display font-extrabold uppercase tracking-tight break-words">
+          Choose your<br><span class="text-outline">configuration</span>
+        </h2>
+      </div>
+
+      <!-- Tabs -->
+      <div class="reveal inline-flex w-full rounded-full border border-white/10 bg-white/[0.03] p-1 backdrop-blur sm:w-auto" role="tablist" aria-label="Configurations" style="transition-delay:.1s">
+        <button type="button" class="tab active flex-1 sm:flex-none" data-tab="base" role="tab" aria-selected="true" aria-controls="panel-base">Base</button>
+        <button type="button" class="tab flex-1 sm:flex-none" data-tab="cyber" role="tab" aria-selected="false" aria-controls="panel-cyber">Cyber Edition</button>
+      </div>
+    </div>
+
+    <!-- Panels -->
+    <div class="mt-10">
+
+      <!-- ===== PANEL: BASE ===== -->
+      <div id="panel-base" data-panel="base" class="panel-anim" role="tabpanel" aria-labelledby="tab-base">
+        <div class="grid gap-8 rounded-[28px] border border-white/10 bg-char/70 p-6 backdrop-blur-xl sm:p-8 lg:grid-cols-12 lg:gap-10 lg:p-12">
+
+          <!-- Left -->
+          <div class="min-w-0 lg:col-span-5">
+            <span class="inline-flex rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] text-white/60">Core</span>
+            <h3 class="mt-5 font-display text-3xl font-extrabold uppercase leading-none break-words sm:text-4xl">Cybervélo <span class="text-neon">Base</span></h3>
+            <p class="mt-4 max-w-sm text-sm leading-relaxed text-white/45">
+              Pure urban mobility without compromise. Everything you need inside a minimalist carbon frame.
+            </p>
+
+            <div class="mt-8 flex items-end gap-2">
+              <span class="font-display text-4xl font-extrabold leading-none sm:text-5xl">€3,490</span>
+            </div>
+            <p class="mt-2 text-[11px] uppercase tracking-[0.2em] text-white/30">Starting price · VAT included</p>
+
+            <a href="#contact"
+               class="group mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full bg-neon px-7 py-4 font-display text-xs font-bold uppercase tracking-[0.18em] text-black transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_-6px_rgba(0,229,255,.95)] sm:w-auto">
+              Choose this build
+              <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+
+          <!-- Right: features -->
+          <div class="min-w-0 lg:col-span-7 lg:border-l lg:border-white/10 lg:pl-10">
+            <p class="text-[10px] uppercase tracking-[0.28em] text-white/35">What's included</p>
+            <ul class="mt-5 space-y-4">
+              <li class="flex items-start gap-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-lime" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="text-sm leading-relaxed text-white/70"><span class="font-semibold text-white">150 km</span> of range in the urban cycle</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-lime" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="text-sm leading-relaxed text-white/70">Modular removable <span class="font-semibold text-white">1.2 kWh</span> battery</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-lime" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="text-sm leading-relaxed text-white/70">Integrated GPS tracker & anti-theft alarm</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-lime" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="text-sm leading-relaxed text-white/70">Aviation-grade T1000 carbon frame</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-lime" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="text-sm leading-relaxed text-white/70">Base AI drivetrain with 4 ride modes</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-lime" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="text-sm leading-relaxed text-white/70">3-year warranty · service in 12 cities</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PANEL: CYBER EDITION ===== -->
+      <div id="panel-cyber" data-panel="cyber" class="hidden" role="tabpanel" aria-labelledby="tab-cyber">
+        <div class="relative grid gap-8 overflow-hidden rounded-[28px] border border-lime/25 bg-char/70 p-6 backdrop-blur-xl sm:p-8 lg:grid-cols-12 lg:gap-10 lg:p-12">
+          <div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-lime/[0.12] blur-[110px]" aria-hidden="true"></div>
+
+          <!-- Left -->
+          <div class="relative min-w-0 lg:col-span-5">
+            <span class="inline-flex rounded-full border border-lime/40 bg-lime/[0.08] px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] text-lime">Flagship</span>
+            <h3 class="mt-5 font-display text-3xl font-extrabold uppercase leading-none break-words sm:text-4xl">Cybervélo <span class="text-lime">Cyber Edition</span></h3>
+            <p class="mt-4 max-w-sm text-sm leading-relaxed text-white/45">
+              Maximum performance, a custom paint job, and priority access to onboard AI updates.
+            </p>
+
+            <div class="mt-8 flex items-end gap-2">
+              <span class="font-display text-4xl font-extrabold leading-none sm:text-5xl">€5,490</span>
+            </div>
+            <p class="mt-2 text-[11px] uppercase tracking-[0.2em] text-white/30">Limited series · 500 units</p>
+
+            <a href="#contact"
+               class="group mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full bg-lime px-7 py-4 font-display text-xs font-bold uppercase tracking-[0.18em] text-black transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_-6px_rgba(204,255,0,.95)] sm:w-auto">
+              Reserve yours
+              <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+
+          <!-- Right: features -->
+          <div class="relative min-w-0 lg:col-span-7 lg:border-l lg:border-white/10 lg:pl-10">
+            <p class="text-[10px] uppercase tracking-[0.28em] text-white/35">Everything in Base, plus</p>
+            <ul class="mt-5 space-y-4">
+              <li class="flex items-start gap-3">
+                <svg class="mt-
